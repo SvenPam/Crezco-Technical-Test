@@ -8,7 +8,7 @@ namespace Crezco.Infrastructure.Persistence.Locations;
 /// <summary>
 ///     The unit of work context for locations.
 /// </summary>
-internal class LocationDbContext : DbContext, ILocationRepository
+internal class LocationDbContext : DbContext
 {
     /// <summary>
     /// Initialize a new <see cref="LocationDbContext"/> with the provided options.
@@ -18,20 +18,7 @@ internal class LocationDbContext : DbContext, ILocationRepository
     {
     }
 
-
     internal DbSet<Location> Locations => this.Set<Location>();
-
-    /// <inheritdoc />
-    public async Task<Location?> FindLocation(string ipAddress)
-    {
-        return await this.Locations.FindAsync(ipAddress);
-    }
-
-    /// <inheritdoc />
-    public void AddLocation(Location location)
-    {
-        this.Locations.Add(location);
-    }
 
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
