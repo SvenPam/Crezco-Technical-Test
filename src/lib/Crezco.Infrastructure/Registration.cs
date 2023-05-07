@@ -2,12 +2,9 @@
 using Crezco.Infrastructure.Persistence.Locations;
 using Crezco.Infrastructure.Persistence.Locations.Repository;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System.Diagnostics.CodeAnalysis;
-using Polly.Caching.Memory;
-using Polly.Caching;
 
 namespace Crezco.Infrastructure
 {
@@ -36,13 +33,7 @@ namespace Crezco.Infrastructure
                         cosmosConfiguration.DatabaseName);
             });
 
-            services.AddTransient<ILocationRepository, LocationRepository>();
-
-
-            var memoryCache = new MemoryCache(new MemoryCacheOptions());
-            var memoryCacheProvider = new MemoryCacheProvider(memoryCache);
-            services.AddSingleton<IAsyncCacheProvider>(sp => memoryCacheProvider);
-
+            services.AddTransient<ILocationRepository, LocationDbContext>();
             return services;
         }
 
