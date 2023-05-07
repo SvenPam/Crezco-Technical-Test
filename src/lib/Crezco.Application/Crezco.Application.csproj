@@ -12,6 +12,7 @@
 	</ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\clients\IPApi.Client\IPApi.Client.csproj" />
+    <ProjectReference Include="..\Crezco.Infrastructure\Crezco.Infrastructure.csproj" />
     <ProjectReference Include="..\Crezco.Shared\Crezco.Shared.csproj" />
   </ItemGroup>
 

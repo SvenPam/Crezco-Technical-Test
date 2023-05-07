@@ -1,4 +1,5 @@
 using Crezco.Application;
+using Crezco.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,6 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.Configure<CosmosConfiguration>(
+    builder.Configuration.GetSection(nameof(CosmosConfiguration)));
 
 builder.Services.AddApplicationServices();
 
@@ -25,8 +29,12 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
-
 app.MapControllers();
+
+app.Configuration.GetSection(nameof(CosmosConfiguration)).Bind(new CosmosConfiguration());
+
+using var serviceScope = app.Services.CreateScope();
+Crezco.Infrastructure.Registration.EnsurePersistenceCreated(serviceScope);
 
 app.Run();
 

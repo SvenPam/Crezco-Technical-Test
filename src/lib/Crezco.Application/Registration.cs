@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Crezco.Infrastructure;
 using IPApi.Client;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,6 +16,7 @@ public static class Registration
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Registration).Assembly));
 
         services.AddIpApiClient();
+        services.AddPersistenceServices();
 
         return services;
     }

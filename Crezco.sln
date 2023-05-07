@@ -23,7 +23,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crezco.Application", "src\l
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crezco.Shared", "src\lib\Crezco.Shared\Crezco.Shared.csproj", "{DB7D65EB-DA5F-41E8-AA3E-858485814B52}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crezco.Application.Tests", "tests\Crezco.Application.Tests\Crezco.Application.Tests.csproj", "{CC8A3CEA-F206-40D6-B578-1D054E2DE1E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crezco.Application.Tests", "tests\Crezco.Application.Tests\Crezco.Application.Tests.csproj", "{CC8A3CEA-F206-40D6-B578-1D054E2DE1E6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crezco.Infrastructure", "src\lib\Crezco.Infrastructure\Crezco.Infrastructure.csproj", "{C206ABB7-378B-4B2C-85B5-3DD8DF573FC8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crezco.Infrastructure.Tests", "tests\Crezco.Infrastructure.Tests\Crezco.Infrastructure.Tests.csproj", "{BFA3A584-8E58-4C3E-99D7-F0686BB17840}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +63,14 @@ Global
 		{CC8A3CEA-F206-40D6-B578-1D054E2DE1E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC8A3CEA-F206-40D6-B578-1D054E2DE1E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC8A3CEA-F206-40D6-B578-1D054E2DE1E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C206ABB7-378B-4B2C-85B5-3DD8DF573FC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C206ABB7-378B-4B2C-85B5-3DD8DF573FC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C206ABB7-378B-4B2C-85B5-3DD8DF573FC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C206ABB7-378B-4B2C-85B5-3DD8DF573FC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFA3A584-8E58-4C3E-99D7-F0686BB17840}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFA3A584-8E58-4C3E-99D7-F0686BB17840}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFA3A584-8E58-4C3E-99D7-F0686BB17840}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFA3A584-8E58-4C3E-99D7-F0686BB17840}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -72,6 +84,8 @@ Global
 		{2F71FF2E-9A75-40C5-8057-9C1AA61B0262} = {B0B2E5FA-8598-4C10-98C6-7D2D4353B0F0}
 		{DB7D65EB-DA5F-41E8-AA3E-858485814B52} = {B0B2E5FA-8598-4C10-98C6-7D2D4353B0F0}
 		{CC8A3CEA-F206-40D6-B578-1D054E2DE1E6} = {4C8292CD-620A-43A2-8CED-56D129FAC46D}
+		{C206ABB7-378B-4B2C-85B5-3DD8DF573FC8} = {B0B2E5FA-8598-4C10-98C6-7D2D4353B0F0}
+		{BFA3A584-8E58-4C3E-99D7-F0686BB17840} = {4C8292CD-620A-43A2-8CED-56D129FAC46D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7D746B41-2032-4041-BFA0-279B50EC379C}

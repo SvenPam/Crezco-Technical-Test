@@ -28,8 +28,7 @@ public class LocationControllerTests
         var locationController = this.CreateLocationController();
         var ipAddress = "24.48.0.1";
 
-        var location = new Location("Canada", "CA", "QC", "Quebec", "Montreal", "H2L", 45.5212f, -73.5524f,
-            "America/Toronto");
+        var location = new Location();
 
         this._mockMediator
             .Setup(x => x.Send(It.IsAny<GetLocationFromIp.Query>(), default))

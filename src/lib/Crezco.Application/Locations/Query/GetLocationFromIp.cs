@@ -1,6 +1,9 @@
-﻿using Crezco.Shared.Locations;
+﻿using Crezco.Infrastructure.Persistence.Locations.Repository;
+using Crezco.Shared.Locations;
 using IPApi.Client.Locations;
 using MediatR;
+using Microsoft.Extensions.Logging;
+using Polly;
 
 namespace Crezco.Application.Locations.Query;
 
@@ -21,20 +24,67 @@ public static class GetLocationFromIp
     internal class Handler : IRequestHandler<Query, Location?>
     {
         private readonly ILocationByIpClientService _locationByIpClient;
+        private readonly ILocationRepository _locationRepository;
+        private readonly ILogger<Handler> _logger;
 
-        public Handler(ILocationByIpClientService locationByIpClient)
+        public Handler(ILocationRepository locationRepository, ILocationByIpClientService locationByIpClient,
+            ILogger<Handler> logger)
         {
+            this._locationRepository = locationRepository;
             this._locationByIpClient = locationByIpClient;
+            this._logger = logger;
         }
 
         /// <inheritdoc />
         public async Task<Location?> Handle(Query request, CancellationToken cancellationToken)
         {
+            var policy = Policy
+                .HandleResult((Location?)null)
+                .FallbackAsync(async cancellation =>
+                {
+                    var location = await this.GetLocationFromExternal(request, cancellation);
+                    if (location is null) return location;
+
+                    await this.AddToPersistence(cancellationToken, location);
+
+                    return location;
+                });
+
+            return await policy.ExecuteAsync(() => this._locationRepository.FindLocation(request.IpAddress));
+        }
+
+        private async Task AddToPersistence(CancellationToken cancellationToken, Location location)
+        {
+            try
+            {
+                this._locationRepository.AddLocation(location);
+                await this._locationRepository.SaveChangesAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex, "Failed to save record to persistence, defer to external response.");
+            }
+        }
+
+        private async Task<Location?> GetLocationFromExternal(Query request, CancellationToken cancellationToken)
+        {
             var result = await this._locationByIpClient.GetLocationForIp(request.IpAddress, cancellationToken);
-            return result is null
+            var location = result is null
                 ? null
-                : new Location(result.Country, result.CountryCode, result.Region, result.RegionName,
-                    result.City, result.Zip, result.Lat, result.Lon, result.Timezone);
+                : new Location
+                {
+                    IpAddress = result.Query, 
+                    Country = result.Country, 
+                    CountryCode = result.CountryCode,  
+                    Region = result.Region, 
+                    RegionName = result.RegionName,
+                    City = result.City,
+                    Zip = result.Zip,
+                    Latitude = result.Lat,
+                    Longitude = result.Lon, 
+                    Timezone = result.Timezone
+                };
+            return location;
         }
     }
 }
