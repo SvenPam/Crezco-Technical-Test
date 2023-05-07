@@ -1,4 +1,5 @@
-﻿using Crezco.Infrastructure.Persistence.Locations.Repository;
+﻿using Crezco.Application.Shared.Behaviours;
+using Crezco.Infrastructure.Persistence.Locations.Repository;
 using Crezco.Shared.Locations;
 using IPApi.Client.Locations;
 using MediatR;
@@ -16,7 +17,11 @@ public static class GetLocationFromIp
     ///     Return a <see cref="Location" /> for a given <paramref name="IpAddress" />
     /// </summary>
     /// <param name="IpAddress">The IP to find a location for.</param>
-    public record Query(string IpAddress) : IRequest<Location?>;
+    public record Query(string IpAddress) : IRequest<Location?>, IIsCacheableRequest
+    {
+        /// <inheritdoc />
+        public string CacheKey => IpAddress;
+    }
 
     /// <summary>
     ///     Handler for <see cref="Query" />

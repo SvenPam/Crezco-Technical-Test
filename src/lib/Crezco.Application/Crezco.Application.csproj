@@ -6,6 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="MediatR" Version="12.0.1" />
+    <PackageReference Include="Polly.Caching.Memory" Version="3.0.2" />
   </ItemGroup>
 	<ItemGroup>
 		<InternalsVisibleTo Include="Crezco.Application.Tests" />

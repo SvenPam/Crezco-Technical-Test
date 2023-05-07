@@ -1,7 +1,12 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Crezco.Application.Shared.Behaviours;
 using Crezco.Infrastructure;
 using IPApi.Client;
+using MediatR;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Polly.Caching;
+using Polly.Caching.Memory;
 
 namespace Crezco.Application;
 
@@ -17,6 +22,13 @@ public static class Registration
 
         services.AddIpApiClient();
         services.AddPersistenceServices();
+
+        var memoryCache = new MemoryCache(new MemoryCacheOptions());
+        var memoryCacheProvider = new MemoryCacheProvider(memoryCache);
+        services.AddSingleton<IAsyncCacheProvider>(sp => memoryCacheProvider);
+
+
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CachingBehaviour<,>));
 
         return services;
     }
