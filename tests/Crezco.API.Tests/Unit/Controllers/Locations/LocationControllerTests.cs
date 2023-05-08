@@ -1,5 +1,6 @@
 ﻿using Crezco.API.Controllers.Locations;
 using Crezco.Application.Locations.Query;
+using Crezco.Application.Shared;
 using Crezco.Shared.Locations;
 using FluentAssertions;
 using MediatR;
@@ -28,7 +29,7 @@ public class LocationControllerTests
         var locationController = this.CreateLocationController();
         var ipAddress = "24.48.0.1";
 
-        var location = new Location();
+        var location = new Response<Location>();
 
         this._mockMediator
             .Setup(x => x.Send(It.IsAny<GetLocationFromIp.Query>(), default))

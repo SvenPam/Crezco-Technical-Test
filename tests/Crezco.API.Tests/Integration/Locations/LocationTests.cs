@@ -1,3 +1,4 @@
+using System.Net;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 
@@ -22,5 +23,12 @@ public class LocationTests : IClassFixture<ApiFactory<Program>>
     {
         var response = await this._client.GetAsync("/location/ip/82.11.238.59");
         response.IsSuccessStatusCode.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Get_LocationFromInvalidIp_ReturnsBadRequest()
+    {
+        var response = await this._client.GetAsync("/location/ip/wrong format");
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 }

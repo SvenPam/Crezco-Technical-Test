@@ -1,12 +1,11 @@
 ﻿using Crezco.Application.Locations.Query;
+using Crezco.Application.Shared;
 using Crezco.Infrastructure.Persistence.Locations.Repository;
 using Crezco.Shared.Locations;
 using FluentAssertions;
 using IPApi.Client.Locations;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using System.Net;
 
 namespace Crezco.Application.Tests.Locations.Query;
 
@@ -23,7 +22,8 @@ public class GetLocationFromIpQueryHandlerTests
     }
 
     private GetLocationFromIp.Handler CreateGetLocationFromIpQueryHandler() =>
-        new(this._mockLocationRepository.Object, _mockLocationByIpClientService.Object, NullLogger<GetLocationFromIp.Handler>.Instance);
+        new(this._mockLocationRepository.Object, this._mockLocationByIpClientService.Object,
+            NullLogger<GetLocationFromIp.Handler>.Instance);
 
     [Fact]
     public async Task Handle_GivenRequestAlreadyStored_ReturnsStoredLocation()
@@ -39,12 +39,12 @@ public class GetLocationFromIpQueryHandlerTests
             .ReturnsAsync(expectedLocation);
 
         // Act
-        var result = await getLocationFromIpQueryHandler.Handle(
+        var response = await getLocationFromIpQueryHandler.Handle(
             request,
             cancellationToken);
 
         // Assert
-        result.Should().Be(expectedLocation);
+        response.Result.Should().Be(expectedLocation);
     }
 
     [Fact]
@@ -75,7 +75,8 @@ public class GetLocationFromIpQueryHandlerTests
         this._mockLocationByIpClientService
             .Setup(x => x.GetLocationForIp(request.IpAddress, cancellationToken))
             .ReturnsAsync(
-                new LocationModel(request.IpAddress, "success", expectedLocation.Country, expectedLocation.CountryCode, expectedLocation.Region, expectedLocation.RegionName, expectedLocation.City, expectedLocation.Zip,
+                new LocationModel(request.IpAddress, "success", expectedLocation.Country, expectedLocation.CountryCode,
+                    expectedLocation.Region, expectedLocation.RegionName, expectedLocation.City, expectedLocation.Zip,
                     expectedLocation.Latitude, expectedLocation.Longitude,
                     expectedLocation.Timezone, "", "", ""));
 
@@ -83,12 +84,12 @@ public class GetLocationFromIpQueryHandlerTests
         this._mockLocationRepository.Setup(x => x.SaveChangesAsync(cancellationToken)).ReturnsAsync(1);
 
         // Act
-        var result = await getLocationFromIpQueryHandler.Handle(
+        var response = await getLocationFromIpQueryHandler.Handle(
             request,
             cancellationToken);
 
         // Assert
-        result.Should().BeEquivalentTo(expectedLocation);
+        response.Result.Should().BeEquivalentTo(expectedLocation);
     }
 
     [Fact]
@@ -107,12 +108,12 @@ public class GetLocationFromIpQueryHandlerTests
             .ReturnsAsync((LocationModel?)null);
 
         // Act
-        var result = await getLocationFromIpQueryHandler.Handle(
+        var response = await getLocationFromIpQueryHandler.Handle(
             request,
             cancellationToken);
 
         // Assert
-        result.Should().BeNull();
+        response.Result.Should().BeNull();
     }
 
     [Fact]
@@ -138,12 +139,13 @@ public class GetLocationFromIpQueryHandlerTests
         };
 
         this._mockLocationRepository.Setup(x => x.FindLocation(request.IpAddress))
-        .ReturnsAsync((Location?)null);
+            .ReturnsAsync((Location?)null);
 
         this._mockLocationByIpClientService
             .Setup(x => x.GetLocationForIp(request.IpAddress, cancellationToken))
             .ReturnsAsync(
-                new LocationModel(request.IpAddress, "success", expectedLocation.Country, expectedLocation.CountryCode, expectedLocation.Region, expectedLocation.RegionName, expectedLocation.City, expectedLocation.Zip,
+                new LocationModel(request.IpAddress, "success", expectedLocation.Country, expectedLocation.CountryCode,
+                    expectedLocation.Region, expectedLocation.RegionName, expectedLocation.City, expectedLocation.Zip,
                     expectedLocation.Latitude, expectedLocation.Longitude,
                     expectedLocation.Timezone, "", "", ""));
 
@@ -151,11 +153,12 @@ public class GetLocationFromIpQueryHandlerTests
             .Throws<InvalidOperationException>();
 
         // Act
-        var result = await getLocationFromIpQueryHandler.Handle(
+        var response = await getLocationFromIpQueryHandler.Handle(
             request,
             cancellationToken);
 
         // Assert
-        result.Should().BeEquivalentTo(expectedLocation);
+        response.Status.Should().Be(Status.Success);
+        response.Result.Should().BeEquivalentTo(expectedLocation);
     }
 }

@@ -1,6 +1,8 @@
-﻿using Crezco.Application.Shared.Behaviours;
+﻿using Crezco.Application.Shared;
+using Crezco.Application.Shared.Behaviours;
 using Crezco.Infrastructure.Persistence.Locations.Repository;
 using Crezco.Shared.Locations;
+using FluentValidation;
 using IPApi.Client.Locations;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -17,16 +19,16 @@ public static class GetLocationFromIp
     ///     Return a <see cref="Location" /> for a given <paramref name="IpAddress" />
     /// </summary>
     /// <param name="IpAddress">The IP to find a location for.</param>
-    public record Query(string IpAddress) : IRequest<Location?>, IIsCacheableRequest
+    public record Query(string IpAddress) : IRequest<Response<Location>>, IIsCacheableRequest
     {
         /// <inheritdoc />
-        public string CacheKey => IpAddress;
+        public string CacheKey => this.IpAddress;
     }
 
     /// <summary>
     ///     Handler for <see cref="Query" />
     /// </summary>
-    internal class Handler : IRequestHandler<Query, Location?>
+    internal class Handler : IRequestHandler<Query, Response<Location>>
     {
         private readonly ILocationByIpClientService _locationByIpClient;
         private readonly ILocationRepository _locationRepository;
@@ -41,7 +43,7 @@ public static class GetLocationFromIp
         }
 
         /// <inheritdoc />
-        public async Task<Location?> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Response<Location>> Handle(Query request, CancellationToken cancellationToken)
         {
             var policy = Policy
                 .HandleResult((Location?)null)
@@ -55,7 +57,11 @@ public static class GetLocationFromIp
                     return location;
                 });
 
-            return await policy.ExecuteAsync(() => this._locationRepository.FindLocation(request.IpAddress));
+            return new Response<Location>
+            {
+                Status = Status.Success,
+                Result = await policy.ExecuteAsync(() => this._locationRepository.FindLocation(request.IpAddress))
+            };
         }
 
         private async Task AddToPersistence(CancellationToken cancellationToken, Location location)
@@ -78,18 +84,36 @@ public static class GetLocationFromIp
                 ? null
                 : new Location
                 {
-                    IpAddress = result.Query, 
-                    Country = result.Country, 
-                    CountryCode = result.CountryCode,  
-                    Region = result.Region, 
+                    IpAddress = result.Query,
+                    Country = result.Country,
+                    CountryCode = result.CountryCode,
+                    Region = result.Region,
                     RegionName = result.RegionName,
                     City = result.City,
                     Zip = result.Zip,
                     Latitude = result.Lat,
-                    Longitude = result.Lon, 
+                    Longitude = result.Lon,
                     Timezone = result.Timezone
                 };
             return location;
+        }
+    }
+
+    public class Validator : AbstractValidator<Query>
+    {
+        public Validator()
+        {
+            this.RuleFor(x => x.IpAddress)
+                .NotEmpty()
+                .MinimumLength(7)
+                .MaximumLength(39)
+                .Must(this.BeValidIpAddress).WithMessage("IP address must be in a valid IPV4 format.");
+        }
+
+        private bool BeValidIpAddress(string ipAddress)
+        {
+            var ipSplitByDot = ipAddress.Split('.');
+            return ipSplitByDot.Length == 4;
         }
     }
 }

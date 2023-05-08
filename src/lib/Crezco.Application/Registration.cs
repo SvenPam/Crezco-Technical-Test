@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Crezco.Application.Shared.Behaviours;
 using Crezco.Infrastructure;
+using FluentValidation;
 using IPApi.Client;
-using MediatR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Polly.Caching;
@@ -18,7 +18,12 @@ public static class Registration
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Registration).Assembly));
+        services.AddMediatR(cfg =>
+        {
+            cfg.RegisterServicesFromAssembly(typeof(Registration).Assembly);
+            cfg.AddOpenBehavior(typeof(ValidationBehaviour<,>));
+            cfg.AddOpenBehavior(typeof(CachingBehaviour<,>));
+        });
 
         services.AddIpApiClient();
         services.AddPersistenceServices();
@@ -27,8 +32,8 @@ public static class Registration
         var memoryCacheProvider = new MemoryCacheProvider(memoryCache);
         services.AddSingleton<IAsyncCacheProvider>(sp => memoryCacheProvider);
 
+        services.AddValidatorsFromAssembly(typeof(Registration).Assembly);
 
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CachingBehaviour<,>));
 
         return services;
     }

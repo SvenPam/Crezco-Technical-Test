@@ -26,6 +26,6 @@ public class LocationController : ControllerBase
     [HttpGet("ip/{ipAddress}")]
     public async Task<IActionResult> GetLocationForIp([FromRoute] string ipAddress) =>
         this.Ok(
-            await this._mediator.Send(new GetLocationFromIp.Query(ipAddress))
+            await this._mediator.Send(new GetLocationFromIp.Query(ipAddress.Trim()))
         );
 }

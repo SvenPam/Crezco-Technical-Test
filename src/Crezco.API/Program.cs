@@ -1,10 +1,12 @@
+using Crezco.API.Filters;
 using Crezco.Application;
 using Crezco.Infrastructure.Persistence;
+using Registration = Crezco.Infrastructure.Registration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(o => o.Filters.Add(typeof(ResponseFilter)));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -34,7 +36,7 @@ app.MapControllers();
 app.Configuration.GetSection(nameof(CosmosConfiguration)).Bind(new CosmosConfiguration());
 
 using var serviceScope = app.Services.CreateScope();
-Crezco.Infrastructure.Registration.EnsurePersistenceCreated(serviceScope);
+Registration.EnsurePersistenceCreated(serviceScope);
 
 app.Run();
 
@@ -43,7 +45,7 @@ namespace Crezco.API
     /// <summary>
     ///     This exists purely for integration tests.
     /// </summary>
-    public class Program
+    public partial class Program
     {
     }
 }
