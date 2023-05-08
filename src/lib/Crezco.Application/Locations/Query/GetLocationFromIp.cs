@@ -45,13 +45,27 @@ public static class GetLocationFromIp
         /// <inheritdoc />
         public async Task<Response<Location>> Handle(Query request, CancellationToken cancellationToken)
         {
+            // We can encapsulate query logic through CQRS and MediatR. Validation is done via
+            // fluent validation. This means the functionality for Caching & Validation can be
+            // in isolation, and reused for other queries or commands through interfaces.
+
+            // Here, the class is concerned only with querying for locations.
+            // Caching the query response is done via IIsCacheableRequest.
             var policy = Policy
                 .HandleResult((Location?)null)
                 .FallbackAsync(async cancellation =>
                 {
+                    // This is the main failure point. Should the external service
+                    // not be available, there is not much which can be done.
+                    // Retries are built into the client, along with a circuit breaker to fail
+                    // fast. Practically, we would rely on SLA's for a paid service with with
+                    // little downtime is mitigated by persistence and caching.
                     var location = await this.GetLocationFromExternal(request, cancellation);
                     if (location is null) return location;
 
+                    // Arguably, this violates SRP. Given more time, this could
+                    // be deferred by an event, and handled as a  background operation
+                    // or function.
                     await this.AddToPersistence(cancellationToken, location);
 
                     return location;

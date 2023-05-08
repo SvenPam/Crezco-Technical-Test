@@ -14,6 +14,13 @@ internal class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TReq
         this._validators = validators;
     }
 
+    /// <summary>
+    ///     Attempts to handle all requests with a registered <seealso cref="FluentValidation.AbstractValidator" />.
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="next"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {

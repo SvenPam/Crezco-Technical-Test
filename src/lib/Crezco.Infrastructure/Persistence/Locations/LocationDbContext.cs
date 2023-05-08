@@ -18,7 +18,6 @@ internal class LocationDbContext : DbContext, ILocationRepository
     {
     }
 
-
     internal DbSet<Location> Locations => this.Set<Location>();
 
     /// <inheritdoc />

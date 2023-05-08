@@ -13,7 +13,7 @@ namespace IPApi.Client;
 [ExcludeFromCodeCoverage]
 public static class Registration
 {
-    private const string BASE_URL = "ip-api.com";
+    private const string BaseUrl = "ip-api.com";
 
     /// <summary>
     ///     Inject services required by IP API Client.
@@ -22,8 +22,14 @@ public static class Registration
     /// <returns></returns>
     public static IServiceCollection AddIpApiClient(this IServiceCollection services)
     {
+
+        // Registering retries and circuit breaker against the HTTP
+        // client, adding some resiliency against depending on an external
+        // service.
+        // Would prefer HTTPS, however, this service's (https://ip-api.com)
+        // premium model is via https.
         services.AddHttpClient<ILocationByIpClientService, LocationByIpClientService>(
-                client => { client.BaseAddress = new Uri($"http://{BASE_URL}/"); })
+                client => { client.BaseAddress = new Uri($"http://{BaseUrl}/"); })
             .AddPolicyHandler(GetRetryPolicy())
             .AddPolicyHandler(GetCircuitBreakerPolicy());
 

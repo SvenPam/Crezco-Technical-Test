@@ -24,6 +24,9 @@ public static class Registration
         var serviceProvider = services.BuildServiceProvider();
 
         var cosmosConfiguration = serviceProvider.GetService<IOptions<CosmosConfiguration>>()?.Value;
+
+        // CosmosDb is used for this application, given the Key Value nature of
+        // IP/Location lookups.
         services.AddDbContext<LocationDbContext>(options =>
         {
             if (cosmosConfiguration != null)
@@ -31,6 +34,11 @@ public static class Registration
                     cosmosConfiguration.Endpoint,
                     cosmosConfiguration.Key,
                     cosmosConfiguration.DatabaseName);
+
+            // If CosmosEmulation is not setup/working, test with SqlLite:
+            // using Microsoft.Data.Sqlite;
+            // var connection = new SqliteConnection("DataSource=:memory:");
+            // options.UseSqlite(connection);
         });
 
         services.AddTransient<ILocationRepository, LocationDbContext>();

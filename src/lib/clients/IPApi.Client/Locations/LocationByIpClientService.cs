@@ -22,6 +22,10 @@ internal sealed class LocationByIpClientService : ILocationByIpClientService
         if (string.IsNullOrWhiteSpace(ipAddress))
             throw new ArgumentException("IP cannot be null or whitespace.", nameof(ipAddress));
 
+        // Here the HTTP Client is injected through the HTTP Client Factory, which allows two things:
+        // 1. Good connection management
+        // 2. The ability to define resilience at a global level. The registration for this HTTP
+        //    client includes a retry policy.
         var response = await this._httpClient.GetAsync($"json/{ipAddress}", cancellationToken);
 
         if (response.IsSuccessStatusCode)

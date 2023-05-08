@@ -3,6 +3,13 @@
 /// <summary>
 ///     Represents a generic response wrapper.
 /// </summary>
+/// <remarks>
+///     Providing a defined response allows standardization across the application.
+///     Using a custom defined status of how the request was handled allows us not
+///     to only cater for HTTP/API but other application types. For example,
+///     we may wish to handle events in a function through the same application
+///     and domain logic.
+/// </remarks>
 public class Response<TResult> : Response
     where TResult : new()
 {
