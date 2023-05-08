@@ -1,6 +1,7 @@
 using Crezco.API.Filters;
 using Crezco.Application;
 using Crezco.Infrastructure.Persistence;
+using Microsoft.OpenApi.Models;
 using Registration = Crezco.Infrastructure.Registration;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,7 +9,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers(o => o.Filters.Add(typeof(ResponseFilter)));
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo() { Title = "Crezco Technical Test", Version = "v1", Description = "Ste Pammenter submission."});
+
+    // Set the comments path for the Swagger JSON and UI.
+    var basePath = AppContext.BaseDirectory;
+    var xmlPath = Path.Combine(basePath, $@"{System.AppDomain.CurrentDomain.BaseDirectory}\Crezco.API.xml");
+    c.IncludeXmlComments(xmlPath);
+});
 
 builder.Services.Configure<CosmosConfiguration>(
     builder.Configuration.GetSection(nameof(CosmosConfiguration)));
