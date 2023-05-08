@@ -11,7 +11,7 @@ namespace Crezco.Infrastructure.Persistence.Locations;
 internal class LocationDbContext : DbContext, ILocationRepository
 {
     /// <summary>
-    /// Initialize a new <see cref="LocationDbContext"/> with the provided options.
+    ///     Initialize a new <see cref="LocationDbContext" /> with the provided options.
     /// </summary>
     /// <param name="options">Options this context should use.</param>
     public LocationDbContext(DbContextOptions<LocationDbContext> options) : base(options)
@@ -22,10 +22,7 @@ internal class LocationDbContext : DbContext, ILocationRepository
     internal DbSet<Location> Locations => this.Set<Location>();
 
     /// <inheritdoc />
-    public async Task<Location?> FindLocation(string ipAddress)
-    {
-        return await this.Locations.FindAsync(ipAddress);
-    }
+    public async Task<Location?> FindLocation(string ipAddress) => await this.Locations.FindAsync(ipAddress);
 
     /// <inheritdoc />
     public void AddLocation(Location location)

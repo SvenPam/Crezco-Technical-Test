@@ -5,13 +5,15 @@ using Polly.Caching;
 namespace Crezco.Application.Shared.Behaviours;
 
 /// <summary>
-/// Caches the <typeparam name="TResponse"></typeparam> for the specified <typeparam name="TRequest"></typeparam>
+///     Caches the
+///     <typeparam name="TResponse"></typeparam>
+///     for the specified
+///     <typeparam name="TRequest"></typeparam>
 /// </summary>
 /// <typeparam name="TRequest">The request to cache.</typeparam>
 /// <typeparam name="TResponse">The response to return from the cache.</typeparam>
-public class CachingBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+internal class CachingBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IIsCacheableRequest
-    where TResponse : new()
 {
     private readonly IAsyncCacheProvider _cacheProvider;
 
@@ -29,12 +31,4 @@ public class CachingBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest,
         return await cachePolicy.ExecuteAsync(context => next(),
             new Context($"{requestName.Name}_{request.CacheKey}"));
     }
-}
-
-/// <summary>
-///     This request will be cached.
-/// </summary>
-public interface IIsCacheableRequest
-{
-    public string CacheKey { get; }
 }

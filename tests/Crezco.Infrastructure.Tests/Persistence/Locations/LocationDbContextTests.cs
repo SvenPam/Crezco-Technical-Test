@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using Crezco.Infrastructure.Persistence.Locations;
+﻿using Crezco.Infrastructure.Persistence.Locations;
 using Crezco.Shared.Locations;
 using FluentAssertions;
 using Microsoft.Data.Sqlite;

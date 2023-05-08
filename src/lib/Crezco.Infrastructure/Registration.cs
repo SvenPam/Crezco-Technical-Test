@@ -1,50 +1,49 @@
-﻿using Crezco.Infrastructure.Persistence;
+﻿using System.Diagnostics.CodeAnalysis;
+using Crezco.Infrastructure.Persistence;
 using Crezco.Infrastructure.Persistence.Locations;
 using Crezco.Infrastructure.Persistence.Locations.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using System.Diagnostics.CodeAnalysis;
 
-namespace Crezco.Infrastructure
+namespace Crezco.Infrastructure;
+
+/// <summary>
+///     Contains service registrations for Application services.
+/// </summary>
+[ExcludeFromCodeCoverage]
+public static class Registration
 {
     /// <summary>
-    ///     Contains service registrations for Application services.
+    ///     Adds services required by persistence services.
     /// </summary>
-    [ExcludeFromCodeCoverage]
-    public static class Registration
+    /// <param name="services"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddPersistenceServices(this IServiceCollection services)
     {
-        /// <summary>
-        /// Adds services required by persistence services.
-        /// </summary>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddPersistenceServices(this IServiceCollection services)
+        var serviceProvider = services.BuildServiceProvider();
+
+        var cosmosConfiguration = serviceProvider.GetService<IOptions<CosmosConfiguration>>()?.Value;
+        services.AddDbContext<LocationDbContext>(options =>
         {
-            var serviceProvider = services.BuildServiceProvider();
+            if (cosmosConfiguration != null)
+                options.UseCosmos(
+                    cosmosConfiguration.Endpoint,
+                    cosmosConfiguration.Key,
+                    cosmosConfiguration.DatabaseName);
+        });
 
-            var cosmosConfiguration = serviceProvider.GetService<IOptions<CosmosConfiguration>>()?.Value;
-            services.AddDbContext<LocationDbContext>(options =>
-            {
-                if (cosmosConfiguration != null)
-                    options.UseCosmos(
-                        cosmosConfiguration.Endpoint,
-                        cosmosConfiguration.Key,
-                        cosmosConfiguration.DatabaseName);
-            });
+        services.AddTransient<ILocationRepository, LocationDbContext>();
+        return services;
+    }
 
-            services.AddTransient<ILocationRepository, LocationDbContext>();
-            return services;
-        }
-
-        /// <summary>
-        ///     Tries to create required persistence infrastructure should it not exist.
-        /// </summary>
-        /// <param name="serviceScope">The current service collection.</param>
-        public static void EnsurePersistenceCreated(IServiceScope serviceScope)
-        {
-            var dbContext = serviceScope.ServiceProvider.GetService<LocationDbContext>();
-            dbContext?.Database.EnsureCreated();
-        }
+    /// <summary>
+    ///     Tries to create required persistence infrastructure should it not exist.
+    /// </summary>
+    /// <param name="serviceScope">The current service collection.</param>
+    public static void EnsurePersistenceCreated(IServiceScope serviceScope)
+    {
+        var dbContext = serviceScope.ServiceProvider.GetService<LocationDbContext>();
+        dbContext?.Database.EnsureCreated();
     }
 }

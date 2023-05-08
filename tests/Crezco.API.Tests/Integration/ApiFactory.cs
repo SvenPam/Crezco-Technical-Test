@@ -1,10 +1,10 @@
+using System.Data.Common;
 using Crezco.Infrastructure.Persistence.Locations;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System.Data.Common;
 
 namespace Crezco.API.Tests.Integration;
 
@@ -17,13 +17,13 @@ public class ApiFactory<TProgram>
         {
             var dbContextDescriptor = services.SingleOrDefault(
                 d => d.ServiceType ==
-                    typeof(DbContextOptions<LocationDbContext>));
+                     typeof(DbContextOptions<LocationDbContext>));
 
             services.Remove(dbContextDescriptor);
 
             var dbConnectionDescriptor = services.SingleOrDefault(
                 d => d.ServiceType ==
-                    typeof(DbConnection));
+                     typeof(DbConnection));
 
             services.Remove(dbConnectionDescriptor);
 
